@@ -29,6 +29,9 @@ global.practiceMode = practiceMode;
 const { SongManager, songManager } = require('../js/songs.js');
 global.songManager = songManager;
 
+const { Gamification, gamification } = require('../js/gamification.js');
+global.gamification = gamification;
+
 console.log('\n  LoopLab Test Suite');
 console.log('  ═════════════════════════════\n');
 
@@ -966,6 +969,345 @@ describe('Edge Cases', () => {
         assert(audioEngine.getStepDuration() > 0);
 
         audioEngine.setBPM(120);
+    });
+});
+
+// ========================
+// GAMIFICATION TESTS
+// ========================
+describe('Gamification - Profile & Identity', () => {
+    it('should have a default profile', () => {
+        assertEqual(gamification.profile.level, 1);
+        assertEqual(gamification.profile.xp, 0);
+        assertEqual(gamification.profile.currentStreak, 0);
+        assert(Array.isArray(gamification.profile.dailyQuests));
+    });
+
+    it('should detect no identity initially', () => {
+        assertEqual(gamification.hasIdentity(), false);
+    });
+
+    it('should setup a secret identity', () => {
+        gamification.setupIdentity('TestKid', 2);
+        assertEqual(gamification.profile.name, 'TestKid');
+        assertEqual(gamification.profile.avatar, gamification.identities[2].avatar);
+        assert(gamification.hasIdentity());
+    });
+
+    it('should have 8 identity options', () => {
+        assertEqual(gamification.identities.length, 8);
+        gamification.identities.forEach(id => {
+            assert(id.avatar, 'Identity should have avatar');
+            assert(id.title, 'Identity should have title');
+        });
+    });
+});
+
+describe('Gamification - XP & Levels', () => {
+    it('should add XP', () => {
+        const startXP = gamification.profile.totalXP;
+        gamification.addXP(50, 'test');
+        assert(gamification.profile.totalXP > startXP, 'XP should increase');
+    });
+
+    it('should level up when enough XP', () => {
+        // Reset
+        gamification.profile.totalXP = 0;
+        gamification.profile.xp = 0;
+        gamification.profile.level = 1;
+
+        gamification.addXP(100, 'test');
+        assertEqual(gamification.profile.level, 2);
+    });
+
+    it('should have 15 levels', () => {
+        assertEqual(gamification.levels.length, 15);
+        // Verify levels are ordered
+        for (let i = 1; i < gamification.levels.length; i++) {
+            assert(gamification.levels[i].xpNeeded > gamification.levels[i-1].xpNeeded,
+                'XP should increase per level');
+        }
+    });
+
+    it('should calculate XP for next level', () => {
+        gamification.profile.totalXP = 150;
+        gamification.profile.level = 2;
+        const info = gamification.getXPForNextLevel();
+        assert(info.progress >= 0 && info.progress <= 1, 'Progress should be 0-1');
+        assert(info.needed > 0, 'Needed XP should be positive');
+    });
+
+    it('should apply streak bonus to XP', () => {
+        gamification.profile.currentStreak = 5; // +50% bonus
+        const earned = gamification.addXP(100, 'test');
+        assert(earned > 100, `Should earn more than 100 with streak, got ${earned}`);
+        gamification.profile.currentStreak = 0;
+    });
+});
+
+describe('Gamification - Streaks (Urgent Optimism)', () => {
+    it('should start a streak', () => {
+        gamification.profile.lastPlayDate = null;
+        gamification.profile.currentStreak = 0;
+        gamification.updateStreak();
+        assertEqual(gamification.profile.currentStreak, 1);
+    });
+
+    it('should continue a streak on consecutive days', () => {
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        gamification.profile.lastPlayDate = yesterday.toISOString().split('T')[0];
+        gamification.profile.currentStreak = 3;
+        gamification.updateStreak();
+        assertEqual(gamification.profile.currentStreak, 4);
+    });
+
+    it('should reset streak after gap', () => {
+        const threeDaysAgo = new Date();
+        threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+        gamification.profile.lastPlayDate = threeDaysAgo.toISOString().split('T')[0];
+        gamification.profile.currentStreak = 10;
+        gamification.updateStreak();
+        assertEqual(gamification.profile.currentStreak, 1);
+    });
+
+    it('should track longest streak', () => {
+        gamification.profile.longestStreak = 5;
+        gamification.profile.currentStreak = 7;
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        gamification.profile.lastPlayDate = yesterday.toISOString().split('T')[0];
+        gamification.updateStreak();
+        assertEqual(gamification.profile.longestStreak, 8);
+    });
+});
+
+describe('Gamification - Achievements (Epic Wins)', () => {
+    it('should unlock achievements', () => {
+        const result = gamification.unlockAchievement('first_beat');
+        assertEqual(result, true);
+        assert(gamification.hasAchievement('first_beat'));
+    });
+
+    it('should not double-unlock achievements', () => {
+        const result = gamification.unlockAchievement('first_beat');
+        assertEqual(result, false);
+    });
+
+    it('should track achievement progress', () => {
+        const progress = gamification.getAchievementProgress();
+        assert(progress.unlocked > 0);
+        assert(progress.total > 0);
+        assert(progress.percent >= 0 && progress.percent <= 100);
+    });
+
+    it('should have all defined achievements', () => {
+        const total = Object.keys(gamification.allAchievements).length;
+        assert(total >= 25, `Should have 25+ achievements, has ${total}`);
+    });
+
+    it('should categorize achievements', () => {
+        const categories = new Set();
+        Object.values(gamification.allAchievements).forEach(a => categories.add(a.category));
+        assert(categories.has('begin'));
+        assert(categories.has('fiero'));
+        assert(categories.has('create'));
+        assert(categories.has('streak'));
+        assert(categories.has('badguy'));
+        assert(categories.has('epic'));
+    });
+});
+
+describe('Gamification - Quests', () => {
+    it('should generate 3 daily quests', () => {
+        gamification.profile.dailyQuestDate = null;
+        gamification.generateDailyQuests();
+        assertEqual(gamification.profile.dailyQuests.length, 3);
+    });
+
+    it('should not regenerate quests on same day', () => {
+        const firstQuests = gamification.profile.dailyQuests.map(q => q.id);
+        gamification.generateDailyQuests();
+        const secondQuests = gamification.profile.dailyQuests.map(q => q.id);
+        assertDeepEqual(firstQuests, secondQuests);
+    });
+
+    it('should have quest templates', () => {
+        assert(gamification.questTemplates.length >= 10, 'Should have 10+ quest templates');
+        gamification.questTemplates.forEach(q => {
+            assert(q.id, 'Quest should have id');
+            assert(q.desc, 'Quest should have desc');
+            assert(q.xp > 0, 'Quest should give XP');
+            assert(typeof q.check === 'function', 'Quest should have check function');
+        });
+    });
+
+    it('should track quest data', () => {
+        gamification.trackQuestProgress('testKey', 42);
+        assertEqual(gamification._questData['testKey'], 42);
+    });
+
+    it('should increment quest data', () => {
+        gamification._questData['counter'] = 0;
+        gamification.incrementQuestData('counter');
+        gamification.incrementQuestData('counter');
+        assertEqual(gamification._questData['counter'], 2);
+    });
+});
+
+describe('Gamification - Power-Ups', () => {
+    it('should start with electronic kit unlocked', () => {
+        assert(gamification.isPowerUpUnlocked('electronic'));
+    });
+
+    it('should list locked and unlocked power-ups', () => {
+        const unlocked = gamification.getUnlockedPowerUps();
+        const locked = gamification.getLockedPowerUps();
+        assert(unlocked.length >= 1);
+        assert(locked.length >= 0);
+        assertEqual(unlocked.length + locked.length, Object.keys(gamification.allPowerUps).length);
+    });
+
+    it('should have power-ups with required fields', () => {
+        Object.values(gamification.allPowerUps).forEach(pu => {
+            assert(pu.name, 'Power-up should have name');
+            assert(pu.type, 'Power-up should have type');
+            assert(pu.icon, 'Power-up should have icon');
+            assert(pu.level > 0, 'Power-up should have unlock level');
+        });
+    });
+});
+
+describe('Gamification - Bad Guys', () => {
+    it('should have 3 bad guys', () => {
+        assertEqual(gamification.badGuys.length, 3);
+    });
+
+    it('should have bad guys with requirements', () => {
+        gamification.badGuys.forEach(bg => {
+            assert(bg.id, 'Bad guy should have id');
+            assert(bg.name, 'Bad guy should have name');
+            assert(bg.icon, 'Bad guy should have icon');
+            assert(bg.achievement, 'Bad guy should have linked achievement');
+            assert(bg.requirement, 'Bad guy should have requirement');
+            assert(bg.requirement.type, 'Requirement should have type');
+            assert(bg.requirement.count > 0, 'Requirement should have count');
+        });
+    });
+
+    it('should get bad guy status', () => {
+        const status = gamification.getBadGuyStatus('offbeat_demon');
+        assert(status !== null);
+        assertEqual(status.id, 'offbeat_demon');
+        assert(typeof status.defeated === 'boolean');
+        assert(typeof status.progress === 'number');
+    });
+
+    it('should track bad guy progress', () => {
+        gamification.profile.badGuysDefeated = {};
+        gamification.trackBadGuyProgress('practice_accuracy', 85);
+        const status = gamification.getBadGuyStatus('offbeat_demon');
+        assert(status.progress >= 1, 'Should track progress');
+    });
+});
+
+describe('Gamification - Allies (Virtual Band)', () => {
+    it('should have 4 allies', () => {
+        assertEqual(gamification.allAllies.length, 4);
+    });
+
+    it('should have allies with all required fields', () => {
+        gamification.allAllies.forEach(ally => {
+            assert(ally.id, 'Ally should have id');
+            assert(ally.name, 'Ally should have name');
+            assert(ally.role, 'Ally should have role');
+            assert(ally.icon, 'Ally should have icon');
+            assert(ally.unlockLevel > 0, 'Ally should have unlock level');
+            assert(ally.encouragements.length >= 3, 'Ally should have encouragements');
+            assert(ally.tips.length >= 3, 'Ally should have tips');
+        });
+    });
+
+    it('should unlock allies based on level', () => {
+        gamification.profile.level = 1;
+        const atLevel1 = gamification.getUnlockedAllies();
+        assertEqual(atLevel1.length, 1); // Only Benny Beats
+
+        gamification.profile.level = 10;
+        const atLevel10 = gamification.getUnlockedAllies();
+        assertEqual(atLevel10.length, 4); // All allies
+    });
+
+    it('should get random encouragement', () => {
+        gamification.profile.level = 5;
+        const enc = gamification.getRandomEncouragement();
+        assert(enc !== null);
+        assert(enc.ally, 'Should have ally');
+        assert(enc.message, 'Should have message');
+    });
+
+    it('should get random tip', () => {
+        gamification.profile.level = 5;
+        const tip = gamification.getRandomTip();
+        assert(tip !== null);
+        assert(tip.ally, 'Should have ally');
+        assert(tip.message, 'Should have message');
+    });
+});
+
+describe('Gamification - Flow State', () => {
+    it('should suggest easy for beginners', () => {
+        gamification.profile.totalPracticeRounds = 0;
+        assertEqual(gamification.getAdaptiveDifficulty(), 'easy');
+    });
+
+    it('should suggest harder difficulty as skill improves', () => {
+        gamification.profile.totalPracticeRounds = 5;
+        gamification.profile.practiceHighScore = 1500;
+        assertEqual(gamification.getAdaptiveDifficulty(), 'medium');
+
+        gamification.profile.practiceHighScore = 4000;
+        assertEqual(gamification.getAdaptiveDifficulty(), 'hard');
+    });
+});
+
+describe('Gamification - Stat Tracking', () => {
+    it('should track beat creation', () => {
+        const before = gamification.profile.totalBeatsCreated;
+        gamification.onBeatCreated();
+        assertEqual(gamification.profile.totalBeatsCreated, before + 1);
+    });
+
+    it('should track note playing', () => {
+        const before = gamification.profile.totalNotesPlayed;
+        gamification.onNotePlayed();
+        assertEqual(gamification.profile.totalNotesPlayed, before + 1);
+    });
+
+    it('should track practice completion', () => {
+        const before = gamification.profile.totalPracticeRounds;
+        gamification.onPracticeComplete(500, 80, 8, 'easy');
+        assertEqual(gamification.profile.totalPracticeRounds, before + 1);
+    });
+
+    it('should track song saves', () => {
+        const before = gamification.profile.totalSongsSaved;
+        gamification.onSongSaved();
+        assertEqual(gamification.profile.totalSongsSaved, before + 1);
+    });
+
+    it('should track exports', () => {
+        const before = gamification.profile.totalExports;
+        gamification.onExport();
+        assertEqual(gamification.profile.totalExports, before + 1);
+    });
+
+    it('should save and load profile', () => {
+        gamification.profile.name = 'SaveTest';
+        gamification.save();
+
+        const loaded = JSON.parse(localStorage.getItem('looplab-profile'));
+        assertEqual(loaded.name, 'SaveTest');
     });
 });
 
