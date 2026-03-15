@@ -1,0 +1,398 @@
+/* === Practice Mode Styles === */
+.practice-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.practice-mode-selector {
+    display: flex;
+    gap: 4px;
+}
+
+.practice-mode-btn {
+    padding: 8px 18px;
+    background: var(--bg-cell);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.practice-mode-btn:hover {
+    border-color: var(--accent-primary);
+}
+
+.practice-mode-btn.active {
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
+    color: white;
+    box-shadow: 0 0 12px var(--glow-primary);
+}
+
+.difficulty-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Score Area */
+#practice-score {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 20px;
+    background: var(--bg-panel);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.score-label, .combo-label {
+    font-size: 12px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+#score-value {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--accent-yellow);
+    font-variant-numeric: tabular-nums;
+    min-width: 80px;
+}
+
+#combo-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent-pink);
+    font-variant-numeric: tabular-nums;
+}
+
+#accuracy-meter {
+    flex: 1;
+    min-width: 120px;
+    height: 20px;
+    background: var(--bg-cell);
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+#accuracy-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-green), var(--accent-secondary));
+    border-radius: 10px;
+    width: 100%;
+    transition: width 0.3s;
+}
+
+#accuracy-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 11px;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+/* Highway (Guitar Hero style) */
+#practice-highway {
+    position: relative;
+    height: 350px;
+    background: linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-panel) 100%);
+    border-radius: var(--radius-md);
+    border: 2px solid var(--border-color);
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+/* Lane lines */
+#practice-highway::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent calc(25% - 1px),
+        var(--border-color) calc(25% - 1px),
+        var(--border-color) calc(25%)
+    );
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Perspective lines */
+#practice-highway::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        180deg,
+        transparent,
+        transparent 48px,
+        rgba(255,255,255,0.02) 48px,
+        rgba(255,255,255,0.02) 50px
+    );
+    pointer-events: none;
+}
+
+#hit-zone {
+    position: absolute;
+    bottom: 60px;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: var(--accent-secondary);
+    box-shadow: 0 0 20px var(--glow-secondary), 0 0 40px var(--glow-secondary);
+    z-index: 3;
+}
+
+#falling-notes {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2;
+}
+
+.falling-note {
+    position: absolute;
+    width: calc(25% - 8px);
+    height: 30px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    transition: none;
+    z-index: 2;
+}
+
+.falling-note.lane-0 {
+    left: 4px;
+    background: linear-gradient(135deg, #ff6d00, #ff9100);
+    box-shadow: 0 0 10px rgba(255, 109, 0, 0.5);
+}
+
+.falling-note.lane-1 {
+    left: calc(25% + 4px);
+    background: linear-gradient(135deg, #7c4dff, #b388ff);
+    box-shadow: 0 0 10px rgba(124, 77, 255, 0.5);
+}
+
+.falling-note.lane-2 {
+    left: calc(50% + 4px);
+    background: linear-gradient(135deg, #00e5ff, #18ffff);
+    box-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+}
+
+.falling-note.lane-3 {
+    left: calc(75% + 4px);
+    background: linear-gradient(135deg, #ff4081, #ff80ab);
+    box-shadow: 0 0 10px rgba(255, 64, 129, 0.5);
+}
+
+.falling-note.hit {
+    animation: noteHit 0.3s ease-out forwards;
+}
+
+.falling-note.miss {
+    animation: noteMiss 0.5s ease-out forwards;
+}
+
+@keyframes noteHit {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.5); opacity: 0.8; }
+    100% { transform: scale(2); opacity: 0; }
+}
+
+@keyframes noteMiss {
+    0% { opacity: 0.5; }
+    100% { opacity: 0; transform: translateY(50px); }
+}
+
+/* Hit feedback */
+.hit-feedback {
+    position: absolute;
+    bottom: 40px;
+    font-size: 20px;
+    font-weight: 800;
+    z-index: 10;
+    animation: hitFeedback 0.6s ease-out forwards;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.hit-feedback.perfect {
+    color: var(--accent-yellow);
+}
+
+.hit-feedback.good {
+    color: var(--accent-green);
+}
+
+.hit-feedback.ok {
+    color: var(--accent-secondary);
+}
+
+.hit-feedback.miss {
+    color: #ff1744;
+}
+
+@keyframes hitFeedback {
+    0% { transform: translateY(0) scale(0.5); opacity: 0; }
+    20% { transform: translateY(-10px) scale(1.2); opacity: 1; }
+    100% { transform: translateY(-60px) scale(0.8); opacity: 0; }
+}
+
+/* Practice Input Pads */
+#practice-input {
+    text-align: center;
+}
+
+#practice-pads {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.practice-pad {
+    width: calc(25% - 12px);
+    max-width: 120px;
+    height: 70px;
+    border-radius: var(--radius-md);
+    border: 3px solid var(--border-color);
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.1s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.practice-pad .pad-key {
+    font-size: 12px;
+    opacity: 0.6;
+}
+
+.practice-pad.pad-0 {
+    background: var(--bg-cell);
+    color: #ff9100;
+    border-color: #ff6d00;
+}
+
+.practice-pad.pad-1 {
+    background: var(--bg-cell);
+    color: #b388ff;
+    border-color: #7c4dff;
+}
+
+.practice-pad.pad-2 {
+    background: var(--bg-cell);
+    color: #18ffff;
+    border-color: #00e5ff;
+}
+
+.practice-pad.pad-3 {
+    background: var(--bg-cell);
+    color: #ff80ab;
+    border-color: #ff4081;
+}
+
+.practice-pad:active,
+.practice-pad.pressed {
+    transform: scale(0.95);
+    filter: brightness(1.5);
+    box-shadow: 0 0 20px currentColor;
+}
+
+.practice-hint {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 8px;
+}
+
+.practice-controls {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+/* Results */
+#practice-results {
+    text-align: center;
+    padding: 40px;
+    background: var(--bg-panel);
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--accent-primary);
+    box-shadow: 0 0 40px var(--glow-primary);
+}
+
+#practice-results h2 {
+    font-size: 28px;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+#result-stars {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+#result-stats {
+    font-size: 16px;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+    line-height: 1.8;
+}
+
+#btn-retry {
+    margin-top: 12px;
+}
+
+@media (max-width: 768px) {
+    #practice-highway {
+        height: 250px;
+    }
+
+    .practice-pad {
+        height: 55px;
+        font-size: 14px;
+    }
+
+    .falling-note {
+        height: 24px;
+        font-size: 12px;
+    }
+}

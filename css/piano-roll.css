@@ -1,0 +1,162 @@
+/* === Piano Roll Styles === */
+.piano-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.instrument-selector,
+.scale-selector {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.piano-actions {
+    display: flex;
+    gap: 6px;
+}
+
+#piano-roll-container {
+    display: flex;
+    background: var(--bg-panel);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    max-height: calc(100vh - 320px);
+    overflow-y: auto;
+}
+
+/* Piano Keys */
+#piano-keys {
+    display: flex;
+    flex-direction: column;
+    min-width: 70px;
+    border-right: 2px solid var(--border-color);
+    position: sticky;
+    left: 0;
+    z-index: 5;
+    background: var(--bg-panel);
+}
+
+.piano-key {
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.1s;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.piano-key.white {
+    background: linear-gradient(90deg, #d0d0e0, #e8e8f0);
+    color: #333;
+}
+
+.piano-key.black {
+    background: linear-gradient(90deg, #1a1a2e, #2a2a4a);
+    color: var(--text-secondary);
+}
+
+.piano-key:hover {
+    filter: brightness(1.2);
+}
+
+.piano-key.playing {
+    background: var(--accent-primary) !important;
+    color: white !important;
+}
+
+.piano-key.in-scale {
+    position: relative;
+}
+
+.piano-key.in-scale::before {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent-green);
+}
+
+/* Piano Grid */
+#piano-grid {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow-x: auto;
+}
+
+.piano-grid-row {
+    display: flex;
+    height: 28px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.piano-grid-row.black-key-row {
+    background: rgba(0,0,0,0.15);
+}
+
+.piano-grid-row.c-note-row {
+    border-bottom: 2px solid var(--accent-primary);
+}
+
+.piano-grid-cell {
+    min-width: 40px;
+    height: 28px;
+    border-right: 1px solid rgba(255,255,255,0.03);
+    cursor: pointer;
+    transition: background 0.1s;
+    position: relative;
+}
+
+.piano-grid-cell:hover {
+    background: rgba(124, 77, 255, 0.15);
+}
+
+.piano-grid-cell.beat-line {
+    border-right: 1px solid var(--border-color);
+}
+
+.piano-grid-cell.active {
+    border-radius: 3px;
+}
+
+.piano-grid-cell.playing {
+    box-shadow: inset 0 0 8px var(--glow-secondary);
+}
+
+/* Note colors based on octave */
+.piano-grid-cell.active {
+    background: var(--accent-primary);
+    box-shadow: 0 0 6px var(--glow-primary);
+}
+
+.piano-grid-cell.active.in-scale {
+    background: var(--accent-green);
+    box-shadow: 0 0 6px rgba(0, 230, 118, 0.4);
+}
+
+@media (max-width: 768px) {
+    .piano-key {
+        height: 24px;
+        min-width: 50px;
+        font-size: 9px;
+    }
+
+    .piano-grid-cell {
+        min-width: 28px;
+        height: 24px;
+    }
+}

@@ -1,0 +1,239 @@
+/* === Beat Sequencer Styles === */
+.sequencer-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.pattern-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pattern-buttons {
+    display: flex;
+    gap: 4px;
+}
+
+.pattern-btn {
+    width: 40px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    border: 2px solid var(--border-color);
+    background: var(--bg-cell);
+    color: var(--text-secondary);
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.pattern-btn:hover {
+    border-color: var(--accent-primary);
+}
+
+.pattern-btn.active {
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
+    color: white;
+    box-shadow: 0 0 10px var(--glow-primary);
+}
+
+.pattern-btn.has-data {
+    border-color: var(--accent-secondary);
+}
+
+.sequencer-actions {
+    display: flex;
+    gap: 6px;
+}
+
+/* Beat Grid */
+.beat-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    background: var(--bg-panel);
+    border-radius: var(--radius-md);
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    overflow-x: auto;
+}
+
+.beat-row {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    min-height: 40px;
+}
+
+.beat-row-label {
+    min-width: 90px;
+    padding: 4px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: background 0.15s;
+}
+
+.beat-row-label:hover {
+    background: var(--bg-cell-hover);
+}
+
+.beat-row-label .instrument-icon {
+    font-size: 16px;
+}
+
+.beat-row-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 60px;
+}
+
+.row-volume {
+    width: 50px;
+    height: 4px;
+}
+
+.row-mute, .row-solo {
+    width: 22px;
+    height: 22px;
+    border-radius: 3px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-cell);
+    color: var(--text-dim);
+    font-size: 9px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.row-mute.active {
+    background: #ff1744;
+    color: white;
+    border-color: #ff1744;
+}
+
+.row-solo.active {
+    background: var(--accent-yellow);
+    color: #000;
+    border-color: var(--accent-yellow);
+}
+
+.beat-cells {
+    display: flex;
+    gap: 2px;
+    flex: 1;
+}
+
+.beat-cell {
+    width: 40px;
+    height: 36px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-cell);
+    cursor: pointer;
+    transition: all 0.1s;
+    position: relative;
+}
+
+.beat-cell:hover {
+    background: var(--bg-cell-hover);
+    border-color: var(--accent-primary);
+}
+
+.beat-cell.active {
+    border-color: transparent;
+}
+
+.beat-cell.playing {
+    box-shadow: 0 0 12px var(--glow-secondary);
+    border-color: var(--accent-secondary) !important;
+}
+
+/* Row-specific active colors */
+.beat-row[data-instrument="kick"] .beat-cell.active {
+    background: linear-gradient(135deg, #ff6d00, #ff9100);
+}
+
+.beat-row[data-instrument="snare"] .beat-cell.active {
+    background: linear-gradient(135deg, #7c4dff, #b388ff);
+}
+
+.beat-row[data-instrument="hihat"] .beat-cell.active {
+    background: linear-gradient(135deg, #00e5ff, #18ffff);
+}
+
+.beat-row[data-instrument="hihat-open"] .beat-cell.active {
+    background: linear-gradient(135deg, #00b8d4, #00e5ff);
+}
+
+.beat-row[data-instrument="clap"] .beat-cell.active {
+    background: linear-gradient(135deg, #ff4081, #ff80ab);
+}
+
+.beat-row[data-instrument="tom"] .beat-cell.active {
+    background: linear-gradient(135deg, #ff6d00, #ffab40);
+}
+
+.beat-row[data-instrument="ride"] .beat-cell.active {
+    background: linear-gradient(135deg, #69f0ae, #b9f6ca);
+}
+
+.beat-row[data-instrument="crash"] .beat-cell.active {
+    background: linear-gradient(135deg, #ffd740, #ffe57f);
+}
+
+.beat-cell.beat-start {
+    border-left: 2px solid var(--text-dim);
+}
+
+/* Velocity indicator on cells */
+.beat-cell.active::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 3px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.5);
+}
+
+.kit-selector {
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+@media (max-width: 768px) {
+    .beat-cell {
+        width: 28px;
+        height: 28px;
+    }
+
+    .beat-row-label {
+        min-width: 60px;
+        font-size: 10px;
+    }
+
+    .beat-row-label .instrument-icon {
+        display: none;
+    }
+
+    .beat-row-controls {
+        display: none;
+    }
+}
