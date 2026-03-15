@@ -460,3 +460,4 @@ const Instruments = {
         return scaleNotes.includes(noteName);
     }
 };
+if (typeof module !== 'undefined' && module.exports) { module.exports = { Instruments }; }

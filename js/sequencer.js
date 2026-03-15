@@ -217,3 +217,4 @@ class BeatSequencer {
 }
 
 const beatSequencer = new BeatSequencer();
+if (typeof module !== 'undefined' && module.exports) { module.exports = { BeatSequencer, beatSequencer }; }

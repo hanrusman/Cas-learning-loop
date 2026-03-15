@@ -47,7 +47,10 @@ class AudioEngine {
     }
 
     setBPM(bpm) {
-        this.bpm = Math.max(40, Math.min(240, bpm));
+        if (bpm === null || bpm === undefined) return;
+        const val = Number(bpm);
+        if (isNaN(val)) return;
+        this.bpm = Math.max(40, Math.min(240, val));
     }
 
     setSwing(amount) {
@@ -133,3 +136,4 @@ class AudioEngine {
 
 // Singleton
 const audioEngine = new AudioEngine();
+if (typeof module !== 'undefined' && module.exports) { module.exports = { AudioEngine, audioEngine }; }

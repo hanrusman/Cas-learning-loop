@@ -78,7 +78,7 @@ class SongManager {
             bpm: audioEngine.bpm,
             swing: audioEngine.swing,
             beatsPerBar: audioEngine.beatsPerBar,
-            patterns: beatSequencer.patterns,
+            patterns: JSON.parse(JSON.stringify(beatSequencer.patterns)),
             melody: pianoRoll.toJSON(),
             arrangement: this.arrangement,
             kit: beatSequencer.currentKit,
@@ -106,7 +106,7 @@ class SongManager {
         audioEngine.swing = song.swing || 0;
         audioEngine.setBeatsPerBar(song.beatsPerBar || 4);
 
-        beatSequencer.patterns = song.patterns;
+        beatSequencer.patterns = JSON.parse(JSON.stringify(song.patterns));
         beatSequencer.currentPattern = 0;
         beatSequencer.currentKit = song.kit || 'electronic';
 
@@ -115,7 +115,7 @@ class SongManager {
         }
 
         if (song.arrangement) {
-            this.arrangement = song.arrangement;
+            this.arrangement = [...song.arrangement];
         }
 
         // Update all UI
@@ -208,12 +208,13 @@ class SongManager {
 
     // Export to WAV
     async exportWAV() {
+        try {
         const offlineCtx = new OfflineAudioContext(2, 44100 * 8, 44100); // 8 seconds
         const masterGain = offlineCtx.createGain();
         masterGain.gain.setValueAtTime(0.8, 0);
         masterGain.connect(offlineCtx.destination);
 
-        const stepDuration = 60.0 / audioEngine.bpm / 4;
+        const stepDuration = audioEngine.getStepDuration();
 
         // Render arrangement
         let currentTime = 0;
@@ -223,9 +224,9 @@ class SongManager {
             for (let step = 0; step < audioEngine.totalSteps; step++) {
                 const time = currentTime + step * stepDuration;
 
-                // Drums
+                // Drums (respect mute/solo)
                 for (const inst of beatSequencer.instruments) {
-                    if (pattern[inst.id][step]) {
+                    if (pattern[inst.id][step] && beatSequencer.isInstrumentAudible(inst.id)) {
                         const vol = beatSequencer.rowVolume[inst.id];
                         const drumGain = offlineCtx.createGain();
                         drumGain.gain.setValueAtTime(vol, time);
@@ -260,6 +261,10 @@ class SongManager {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error('Export failed:', err);
+            alert('Export mislukt. Probeer het opnieuw.');
+        }
     }
 
     _bufferToWav(buffer) {
@@ -317,3 +322,4 @@ class SongManager {
 }
 
 const songManager = new SongManager();
+if (typeof module !== 'undefined' && module.exports) { module.exports = { SongManager, songManager }; }

@@ -190,10 +190,11 @@ class PianoRoll {
             gridContainer.appendChild(row);
         }
 
-        // Global mouse up
-        document.addEventListener('mouseup', () => {
-            this.isMouseDown = false;
-        });
+        // Global mouse up - only add once
+        if (!this._mouseUpBound) {
+            this._mouseUpBound = () => { this.isMouseDown = false; };
+            document.addEventListener('mouseup', this._mouseUpBound);
+        }
     }
 
     _previewNote(midi) {
@@ -235,3 +236,4 @@ class PianoRoll {
 }
 
 const pianoRoll = new PianoRoll();
+if (typeof module !== 'undefined' && module.exports) { module.exports = { PianoRoll, pianoRoll }; }

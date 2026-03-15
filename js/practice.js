@@ -76,6 +76,8 @@ class PracticeMode {
     }
 
     _setupKeyboard() {
+        if (this._keydownBound) return; // Only bind once
+        this._keydownBound = true;
         document.addEventListener('keydown', (e) => {
             if (!this.isRunning) return;
             const keyMap = { '1': 0, '2': 1, '3': 2, '4': 3, 'a': 0, 's': 1, 'd': 2, 'f': 3 };
@@ -159,7 +161,7 @@ class PracticeMode {
         this.patternIndex = 0;
 
         const highway = document.getElementById('practice-highway');
-        this.highwayHeight = highway.offsetHeight;
+        this.highwayHeight = highway.offsetHeight || 350; // Fallback if hidden
         this.hitZoneY = this.highwayHeight - 66; // Match CSS hit-zone position
 
         const settings = this.difficultySettings[this.difficulty];
@@ -295,8 +297,8 @@ class PracticeMode {
         for (const note of this.fallingNotes) {
             if (note.lane !== lane || note.hit || note.missed) continue;
 
-            const dist = Math.abs(note.currentY - this.hitZoneY);
-            if (dist < closestDist && dist < settings.hitWindow * 2) {
+            const dist = Math.abs((note.currentY || 0) - this.hitZoneY);
+            if (dist < closestDist && dist < settings.hitWindow) {
                 closestDist = dist;
                 closestNote = note;
             }
@@ -395,3 +397,4 @@ class PracticeMode {
 }
 
 const practiceMode = new PracticeMode();
+if (typeof module !== 'undefined' && module.exports) { module.exports = { PracticeMode, practiceMode }; }

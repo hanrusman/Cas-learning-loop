@@ -110,11 +110,12 @@
         }
 
         // Visual update (use setTimeout to sync with display)
+        const delay = Math.max(0, (time - audioEngine.ctx.currentTime) * 1000);
         setTimeout(() => {
             updateStepIndicator(step);
             beatSequencer.highlightStep(step);
             pianoRoll.highlightStep(step);
-        }, (time - audioEngine.ctx.currentTime) * 1000);
+        }, delay);
     };
 
     // ========================
