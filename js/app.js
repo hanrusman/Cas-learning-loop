@@ -611,6 +611,7 @@
     pianoRoll.render(document.getElementById('piano-keys'), document.getElementById('piano-grid'));
     practiceMode.init();
     songManager.renderArrangement();
+    songManager.renderExampleSongs();
 
     // Gamification init
     gamification.updateStreak();

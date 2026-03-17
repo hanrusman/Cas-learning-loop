@@ -280,6 +280,7 @@ const Instruments = {
             case 'bass': return this._bass(ctx, dest, noteFreq, time, duration, velocity);
             case 'strings': return this._strings(ctx, dest, noteFreq, time, duration, velocity);
             case 'pluck': return this._pluck(ctx, dest, noteFreq, time, duration, velocity);
+            case 'guitar': return this._guitar(ctx, dest, noteFreq, time, duration, velocity);
             default: return this._synthLead(ctx, dest, noteFreq, time, duration, velocity);
         }
     },
@@ -423,6 +424,67 @@ const Instruments = {
 
         osc.start(time);
         osc.stop(time + duration + 0.01);
+    },
+
+    _guitar(ctx, dest, freq, time, duration, velocity) {
+        // Acoustic guitar: Karplus-Strong-like plucked string
+        const fundamental = ctx.createOscillator();
+        const harm2 = ctx.createOscillator();
+        const harm3 = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const filter = ctx.createBiquadFilter();
+        const bodyFilter = ctx.createBiquadFilter();
+
+        // Fundamental + harmonics for body resonance
+        fundamental.type = 'triangle';
+        fundamental.frequency.setValueAtTime(freq, time);
+        harm2.type = 'sine';
+        harm2.frequency.setValueAtTime(freq * 2, time);
+        harm3.type = 'sine';
+        harm3.frequency.setValueAtTime(freq * 3, time);
+
+        // Body resonance filter
+        bodyFilter.type = 'peaking';
+        bodyFilter.frequency.setValueAtTime(200, time);
+        bodyFilter.Q.setValueAtTime(2, time);
+        bodyFilter.gain.setValueAtTime(4, time);
+
+        // String brightness filter (decays over time)
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(freq * 5, time);
+        filter.frequency.exponentialRampToValueAtTime(freq * 1.2, time + duration * 0.6);
+        filter.Q.setValueAtTime(1, time);
+
+        // Harmonic gains
+        const harmGain2 = ctx.createGain();
+        const harmGain3 = ctx.createGain();
+        harmGain2.gain.setValueAtTime(0.12 * velocity, time);
+        harmGain2.gain.exponentialRampToValueAtTime(0.001, time + duration * 0.7);
+        harmGain3.gain.setValueAtTime(0.06 * velocity, time);
+        harmGain3.gain.exponentialRampToValueAtTime(0.001, time + duration * 0.5);
+
+        fundamental.connect(filter);
+        harm2.connect(harmGain2);
+        harmGain2.connect(filter);
+        harm3.connect(harmGain3);
+        harmGain3.connect(filter);
+        filter.connect(bodyFilter);
+        bodyFilter.connect(gain);
+        gain.connect(dest);
+
+        // Sharp attack, natural decay (like plucking a string)
+        gain.gain.setValueAtTime(0, time);
+        gain.gain.linearRampToValueAtTime(0.3 * velocity, time + 0.003);
+        gain.gain.setValueAtTime(0.25 * velocity, time + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.08 * velocity, time + duration * 0.3);
+        gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
+
+        fundamental.start(time);
+        fundamental.stop(time + duration + 0.01);
+        harm2.start(time);
+        harm2.stop(time + duration + 0.01);
+        harm3.start(time);
+        harm3.stop(time + duration + 0.01);
     },
 
     // ========================

@@ -21,15 +21,23 @@ class Tutorial {
     allSteps = [
         {
             id: 'welcome',
-            message: 'Hoi! Ik ben Benny Beats! Ik ga je helpen om muziek te maken. Ben je er klaar voor? Klik op "Volgende" !',
+            message: 'Hoi! Ik ben Benny Beats! Weet je wat een loop is? Een loop is een stukje muziek dat steeds opnieuw wordt afgespeeld. Samen gaan we een liedje maken met loops!',
             target: null,
             action: 'click-next',
             emoji: '🥁',
             xp: 0
         },
         {
+            id: 'explain_loop',
+            message: 'Zo werkt het: je maakt eerst een drumbeat, dan voeg je een melodie toe. Samen wordt dat een liedje! Elke rij vakjes is een ander geluid.',
+            target: null,
+            action: 'click-next',
+            emoji: '💡',
+            xp: 0
+        },
+        {
             id: 'listen_beat',
-            message: 'Zie je die gekleurde vakjes? Dat is een beat! Druk op de PLAY knop ▶ om te horen hoe het klinkt!',
+            message: 'Zie je die gekleurde vakjes hieronder? Dat is een beat! Druk op de PLAY knop ▶ om te horen hoe het klinkt.',
             target: '#btn-play',
             action: 'click',
             emoji: '🎧',
@@ -37,7 +45,7 @@ class Tutorial {
         },
         {
             id: 'stop_beat',
-            message: 'Cool he! Je hoort nu drums! Druk op STOP ⏹ om de muziek te stoppen.',
+            message: 'Hoor je dat? De drums herhalen steeds opnieuw, dat is een loop! Druk op STOP ⏹ om te stoppen.',
             target: '#btn-stop',
             action: 'click',
             emoji: '✋',
@@ -45,7 +53,7 @@ class Tutorial {
         },
         {
             id: 'click_kick',
-            message: 'Nu ben jij aan de beurt! Klik op een LEEG vakje bij de Kick drum om een beat toe te voegen.',
+            message: 'Nu ben jij aan de beurt! Klik op een leeg vakje bij de Kick drum (de eerste rij). Dan voeg je een basgeluid toe!',
             target: '.beat-row[data-instrument="kick"]',
             action: 'beat-cell-click',
             instrument: 'kick',
@@ -54,7 +62,7 @@ class Tutorial {
         },
         {
             id: 'play_your_beat',
-            message: 'Super! Nu druk je op PLAY ▶ om JOUW beat te horen!',
+            message: 'Goed zo! Druk nu op PLAY ▶ om te horen wat je hebt gemaakt!',
             target: '#btn-play',
             action: 'click',
             emoji: '🎉',
@@ -62,7 +70,7 @@ class Tutorial {
         },
         {
             id: 'add_snare',
-            message: 'Lekker bezig! Voeg nu een Snare drum toe. Klik op een vakje bij de Snare!',
+            message: 'Lekker! Voeg nu een Snare toe (de tweede rij). De snare klinkt als een klap!',
             target: '.beat-row[data-instrument="snare"]',
             action: 'beat-cell-click',
             instrument: 'snare',
@@ -70,41 +78,24 @@ class Tutorial {
             xp: 15
         },
         {
-            id: 'add_hihat',
-            message: 'Yes! Nu een Hi-hat erbij. Klik op een vakje bij de Hi-hat!',
-            target: '.beat-row[data-instrument="hihat"]',
-            action: 'beat-cell-click',
-            instrument: 'hihat',
-            emoji: '🎶',
-            xp: 15
-        },
-        {
-            id: 'listen_full',
-            message: 'Wow, je hebt nu 3 instrumenten! Druk op PLAY ▶ om je volledige beat te horen!',
-            target: '#btn-play',
-            action: 'click',
-            emoji: '🔊',
-            xp: 10
+            id: 'explain_song_structure',
+            message: 'Wist je dat bijna alle liedjes op de radio zo worden gemaakt? Eerst een beat, dan een melodie erbij, en dan herhalen! Klik op "Volgende" om verder te gaan.',
+            target: null,
+            action: 'click-next',
+            emoji: '📻',
+            xp: 5
         },
         {
             id: 'change_bpm',
-            message: 'Wil je het sneller of langzamer? Klik op de + of - knop bij het tempo (BPM)!',
+            message: 'Wil je het sneller of langzamer? Klik op + of - bij het tempo. Langzaam = rustig liedje, snel = dansfeestje!',
             target: '.bpm-control',
             action: 'bpm-change',
             emoji: '⏩',
             xp: 10
         },
         {
-            id: 'try_random',
-            message: 'Klik op de 🎲 Random knop voor een verrassing-beat!',
-            target: '#btn-random-pattern',
-            action: 'click',
-            emoji: '🎲',
-            xp: 10
-        },
-        {
             id: 'go_melody',
-            message: 'Tijd voor melodie! Klik bovenaan op "Melodie" 🎹 om naar de piano te gaan.',
+            message: 'Tijd om een melodie toe te voegen! Klik op "Melodie" 🎹 hierboven.',
             target: '.nav-btn[data-view="piano"]',
             action: 'click',
             emoji: '🎹',
@@ -112,7 +103,7 @@ class Tutorial {
         },
         {
             id: 'click_note',
-            message: 'Klik op een vakje in het piano-rooster om een noot toe te voegen!',
+            message: 'Klik op een vakje om een noot neer te zetten. Hoog = hoge toon, laag = lage toon. Probeer het!',
             target: '#piano-grid',
             action: 'piano-note-click',
             emoji: '🎵',
@@ -120,7 +111,7 @@ class Tutorial {
         },
         {
             id: 'add_more_notes',
-            message: 'Goed zo! Klik nog een paar vakjes aan om een melodie te maken. Klik daarna op "Volgende".',
+            message: 'Klik nog een paar vakjes om een melodie te maken. Probeer noten naast elkaar te zetten zodat het een deuntje wordt! Klik daarna op "Volgende".',
             target: '#piano-grid',
             action: 'click-next',
             emoji: '🎼',
@@ -128,31 +119,23 @@ class Tutorial {
         },
         {
             id: 'play_melody',
-            message: 'Druk op PLAY ▶ om je beat EN melodie samen te horen!',
+            message: 'Druk op PLAY ▶ om je beat EN melodie samen te horen. Zo klinkt jouw liedje!',
             target: '#btn-play',
             action: 'click',
             emoji: '🎧',
             xp: 15
         },
         {
-            id: 'go_practice',
-            message: 'Wil je een spelletje doen? Ga naar "Oefenen" 🎸 !',
-            target: '.nav-btn[data-view="practice"]',
-            action: 'click',
-            emoji: '🎮',
-            xp: 10
-        },
-        {
-            id: 'start_practice',
-            message: 'Klik op "Start!" om het ritme-spel te beginnen. Druk op de juiste knoppen als de noten naar beneden vallen!',
-            target: '#btn-start-practice',
-            action: 'click',
-            emoji: '🕹️',
-            xp: 15
+            id: 'explain_save',
+            message: 'Als je iets moois hebt gemaakt, kun je naar "Liedjes" gaan om het op te slaan! Daar staan ook voorbeeldliedjes om van te leren. Klik op "Volgende".',
+            target: null,
+            action: 'click-next',
+            emoji: '💾',
+            xp: 5
         },
         {
             id: 'tutorial_done',
-            message: 'Je bent een STER! Je weet nu hoe alles werkt. Ga lekker verder met muziek maken! Je kunt altijd je Quests bekijken voor nieuwe opdrachten.',
+            message: 'Je bent een ster! Je weet nu hoe je een liedje maakt: een beat + een melodie = een loop! Probeer ook eens de voorbeeldliedjes bij "Liedjes". Veel plezier!',
             target: null,
             action: 'click-next',
             emoji: '⭐',

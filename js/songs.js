@@ -321,5 +321,204 @@ class SongManager {
     }
 }
 
+// =====================
+// EXAMPLE SONGS (simple riffs as inspiration)
+// =====================
+SongManager.prototype.exampleSongs = [
+    {
+        name: 'Vrolijk Deuntje',
+        description: 'Een simpel vrolijk melodietje met gitaar',
+        icon: '🎸',
+        bpm: 110,
+        instrument: 'guitar',
+        scale: 'major',
+        key: 'C',
+        // Simple C major melody: C E G E C E G E (octave 4)
+        melody: { '60-0': true, '64-2': true, '67-4': true, '64-6': true, '60-8': true, '64-10': true, '67-12': true, '64-14': true },
+        beat: {
+            kick: [true,false,false,false,true,false,false,false,true,false,false,false,true,false,false,false],
+            snare: [false,false,false,false,true,false,false,false,false,false,false,false,true,false,false,false],
+            hihat: [true,false,true,false,true,false,true,false,true,false,true,false,true,false,true,false],
+            'hihat-open': new Array(16).fill(false),
+            clap: new Array(16).fill(false),
+            tom: new Array(16).fill(false),
+            ride: new Array(16).fill(false),
+            crash: new Array(16).fill(false)
+        }
+    },
+    {
+        name: 'Koele Groove',
+        description: 'Een relaxte groove zoals Ed Sheeran',
+        icon: '🎤',
+        bpm: 96,
+        instrument: 'guitar',
+        scale: 'minor',
+        key: 'E',
+        // Em - G - D - C vibe: E4 B3 G4 E4 D4 B3 C4 D4
+        melody: { '64-0': true, '59-2': true, '67-4': true, '64-6': true, '62-8': true, '59-10': true, '60-12': true, '62-14': true },
+        beat: {
+            kick: [true,false,false,false,false,false,true,false,true,false,false,false,false,false,false,false],
+            snare: [false,false,false,false,true,false,false,false,false,false,false,false,true,false,false,false],
+            hihat: [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true],
+            'hihat-open': new Array(16).fill(false),
+            clap: new Array(16).fill(false),
+            tom: new Array(16).fill(false),
+            ride: new Array(16).fill(false),
+            crash: new Array(16).fill(false)
+        }
+    },
+    {
+        name: 'Dansfeestje',
+        description: 'Een lekker dansbaar nummer',
+        icon: '💃',
+        bpm: 120,
+        instrument: 'synth',
+        scale: 'pentatonic',
+        key: 'C',
+        // Pentatonic bounce: C D E G A G E D
+        melody: { '60-0': true, '62-2': true, '64-4': true, '67-6': true, '69-8': true, '67-10': true, '64-12': true, '62-14': true },
+        beat: {
+            kick: [true,false,false,false,true,false,false,false,true,false,false,false,true,false,false,false],
+            snare: [false,false,false,false,true,false,false,true,false,false,false,false,true,false,false,false],
+            hihat: [true,false,true,false,true,false,true,false,true,false,true,false,true,false,true,false],
+            'hihat-open': [false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false],
+            clap: [false,false,false,false,true,false,false,false,false,false,false,false,true,false,false,false],
+            tom: new Array(16).fill(false),
+            ride: new Array(16).fill(false),
+            crash: [true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
+        }
+    },
+    {
+        name: 'Rustig Pianolied',
+        description: 'Een zachte melodie op piano',
+        icon: '🎹',
+        bpm: 80,
+        instrument: 'piano',
+        scale: 'major',
+        key: 'G',
+        // G major gentle: G B D B G A B D
+        melody: { '67-0': true, '71-2': true, '74-4': true, '71-6': true, '67-8': true, '69-10': true, '71-12': true, '74-14': true },
+        beat: {
+            kick: [true,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false],
+            snare: new Array(16).fill(false),
+            hihat: [true,false,false,false,true,false,false,false,true,false,false,false,true,false,false,false],
+            'hihat-open': new Array(16).fill(false),
+            clap: new Array(16).fill(false),
+            tom: new Array(16).fill(false),
+            ride: [true,false,true,false,true,false,true,false,true,false,true,false,true,false,true,false],
+            crash: new Array(16).fill(false)
+        }
+    },
+    {
+        name: 'Stoere Rock',
+        description: 'Een stevig rockritme',
+        icon: '🎸',
+        bpm: 130,
+        instrument: 'pluck',
+        scale: 'minor',
+        key: 'A',
+        // A minor rock: A C E A G E C A
+        melody: { '69-0': true, '72-2': true, '76-4': true, '69-6': true, '67-8': true, '76-10': true, '72-12': true, '69-14': true },
+        beat: {
+            kick: [true,false,true,false,false,false,true,false,true,false,false,false,false,false,true,false],
+            snare: [false,false,false,false,true,false,false,false,false,false,false,false,true,false,false,false],
+            hihat: [true,false,true,false,true,false,true,false,true,false,true,false,true,false,true,false],
+            'hihat-open': new Array(16).fill(false),
+            clap: new Array(16).fill(false),
+            tom: [false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true],
+            ride: new Array(16).fill(false),
+            crash: [true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
+        }
+    },
+    {
+        name: 'Blues Gevoel',
+        description: 'Een lekker blues-achtig riffje',
+        icon: '🎷',
+        bpm: 90,
+        instrument: 'guitar',
+        scale: 'blues',
+        key: 'E',
+        // E blues: E G A Bb B E G E
+        melody: { '64-0': true, '67-2': true, '69-4': true, '70-6': true, '71-8': true, '64-10': true, '67-12': true, '64-14': true },
+        beat: {
+            kick: [true,false,false,false,false,false,true,false,true,false,false,false,false,false,false,false],
+            snare: [false,false,false,false,true,false,false,false,false,false,false,false,true,false,false,false],
+            hihat: [true,false,true,false,true,false,true,false,true,false,true,false,true,false,true,false],
+            'hihat-open': [false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,true],
+            clap: new Array(16).fill(false),
+            tom: new Array(16).fill(false),
+            ride: new Array(16).fill(false),
+            crash: new Array(16).fill(false)
+        }
+    }
+];
+
+SongManager.prototype.loadExampleSong = function(index) {
+    const song = this.exampleSongs[index];
+    if (!song) return;
+
+    audioEngine.setBPM(song.bpm);
+    audioEngine.swing = 0;
+    audioEngine.setBeatsPerBar(4);
+
+    // Load beat pattern
+    beatSequencer.patterns[0] = beatSequencer._createEmptyPattern();
+    const pattern = beatSequencer.patterns[0];
+    for (const [inst, steps] of Object.entries(song.beat)) {
+        if (pattern[inst]) {
+            for (let i = 0; i < steps.length; i++) {
+                pattern[inst][i] = steps[i];
+            }
+        }
+    }
+    beatSequencer.currentPattern = 0;
+
+    // Load melody
+    pianoRoll.clear();
+    pianoRoll.instrument = song.instrument;
+    pianoRoll.scale = song.scale;
+    pianoRoll.key = song.key;
+    for (const [key, val] of Object.entries(song.melody)) {
+        pianoRoll.grid[key] = val;
+    }
+
+    this.arrangement = [0];
+    this.currentSongName = song.name;
+
+    // Update UI
+    document.getElementById('bpm-value').textContent = audioEngine.bpm;
+    document.getElementById('swing').value = 0;
+    document.getElementById('melody-instrument').value = pianoRoll.instrument;
+    document.getElementById('scale-select').value = pianoRoll.scale;
+    document.getElementById('key-select').value = pianoRoll.key;
+
+    beatSequencer.render(document.getElementById('beat-grid'));
+    beatSequencer.updatePatternButtons();
+    pianoRoll.render(document.getElementById('piano-keys'), document.getElementById('piano-grid'));
+    this.renderArrangement();
+};
+
+SongManager.prototype.renderExampleSongs = function() {
+    const grid = document.getElementById('example-songs-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    this.exampleSongs.forEach((song, index) => {
+        const card = document.createElement('div');
+        card.className = 'song-card example-song-card';
+        card.innerHTML = `
+            <div class="example-song-icon">${song.icon}</div>
+            <h4>${song.name}</h4>
+            <div class="song-info">${song.description}<br>${song.bpm} BPM</div>
+        `;
+        card.addEventListener('click', () => {
+            this.loadExampleSong(index);
+            // Switch to sequencer view to see the result
+            document.querySelector('.nav-btn[data-view="sequencer"]').click();
+        });
+        grid.appendChild(card);
+    });
+};
+
 const songManager = new SongManager();
 if (typeof module !== 'undefined' && module.exports) { module.exports = { SongManager, songManager }; }

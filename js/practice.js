@@ -28,9 +28,9 @@ class PracticeMode {
         this.laneSounds = ['kick', 'snare', 'hihat', 'clap'];
 
         this.difficultySettings = {
-            easy: { speed: 1.5, density: 0.3, hitWindow: 50, noteInterval: 500 },
-            medium: { speed: 2.5, density: 0.5, hitWindow: 35, noteInterval: 350 },
-            hard: { speed: 3.5, density: 0.7, hitWindow: 25, noteInterval: 250 }
+            easy: { speed: 1.0, density: 0.15, hitWindow: 70, noteInterval: 700, maxSimultaneous: 1, maxLanes: 2 },
+            medium: { speed: 1.8, density: 0.35, hitWindow: 45, noteInterval: 400, maxSimultaneous: 2, maxLanes: 3 },
+            hard: { speed: 2.8, density: 0.55, hitWindow: 30, noteInterval: 280, maxSimultaneous: 3, maxLanes: 4 }
         };
     }
 
@@ -98,6 +98,8 @@ class PracticeMode {
         const settings = this.difficultySettings[this.difficulty];
         const totalBeats = 32; // 2 bars at 16 steps
         this.pattern = [];
+        const maxLanes = settings.maxLanes || 4;
+        const maxSimul = settings.maxSimultaneous || 4;
 
         // Generate musical pattern based on current beat
         const grid = beatSequencer.getGrid();
@@ -106,35 +108,48 @@ class PracticeMode {
         );
 
         if (hasBeats) {
-            // Use current beat pattern
+            // Use current beat pattern, but limit complexity per difficulty
             for (let bar = 0; bar < 2; bar++) {
                 for (let step = 0; step < 16; step++) {
                     const laneMap = { kick: 0, snare: 1, hihat: 2, clap: 3 };
+                    let notesThisStep = 0;
                     for (const [inst, lane] of Object.entries(laneMap)) {
+                        if (lane >= maxLanes) continue;
+                        if (notesThisStep >= maxSimul) break;
                         if (grid[inst] && grid[inst][step]) {
                             this.pattern.push({
                                 lane,
                                 time: (bar * 16 + step) * (60000 / audioEngine.bpm / 4)
                             });
+                            notesThisStep++;
                         }
                     }
                 }
             }
         } else {
-            // Generate random pattern
+            // Generate simple pattern for kids
             const stepTime = 60000 / audioEngine.bpm / 4;
+            // Use only allowed lanes
+            const allowedLanes = [];
+            for (let i = 0; i < maxLanes; i++) allowedLanes.push(i);
+
             for (let step = 0; step < totalBeats; step++) {
                 if (Math.random() < settings.density) {
-                    this.pattern.push({
-                        lane: Math.floor(Math.random() * 4),
-                        time: step * stepTime
-                    });
+                    // Pick one lane (easy = only 1 note at a time)
+                    const notesThisStep = Math.min(maxSimul, 1 + Math.floor(Math.random() * maxSimul));
+                    const shuffledLanes = [...allowedLanes].sort(() => Math.random() - 0.5);
+                    for (let n = 0; n < notesThisStep; n++) {
+                        this.pattern.push({
+                            lane: shuffledLanes[n],
+                            time: step * stepTime
+                        });
+                    }
                 }
             }
         }
 
         // Loop pattern if too short
-        if (this.pattern.length < 10) {
+        if (this.pattern.length < 8) {
             const origLen = this.pattern.length;
             const lastTime = this.pattern.length > 0 ? this.pattern[this.pattern.length - 1].time : 0;
             for (let i = 0; i < origLen; i++) {
