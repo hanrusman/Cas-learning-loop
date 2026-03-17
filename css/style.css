@@ -25,6 +25,36 @@
     --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
 }
 
+/* === Light Theme === */
+[data-theme="light"] {
+    --bg-dark: #f0f0f5;
+    --bg-panel: #ffffff;
+    --bg-cell: #e8e8f0;
+    --bg-cell-hover: #dcdce8;
+    --bg-cell-active: #c8c8e0;
+    --accent-primary: #6200ea;
+    --accent-secondary: #0097a7;
+    --accent-warm: #e65100;
+    --accent-pink: #d81b60;
+    --accent-green: #00c853;
+    --accent-yellow: #f9a825;
+    --text-primary: #1a1a2e;
+    --text-secondary: #4a4a6a;
+    --text-dim: #8080a0;
+    --border-color: #d0d0e0;
+    --glow-primary: rgba(98, 0, 234, 0.2);
+    --glow-secondary: rgba(0, 151, 167, 0.2);
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.1);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+}
+
+[data-theme="light"] select,
+[data-theme="light"] input[type="text"] {
+    background: var(--bg-cell);
+    color: var(--text-primary);
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -619,6 +649,24 @@ label {
 .tutorial-restart-btn:hover {
     background: var(--accent-yellow);
     color: var(--bg-dark);
+}
+
+/* === Theme Toggle === */
+.theme-toggle {
+    background: var(--bg-cell);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 6px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    line-height: 1;
+}
+
+.theme-toggle:hover {
+    border-color: var(--accent-primary);
+    background: var(--bg-cell-hover);
 }
 
 /* === Responsive === */

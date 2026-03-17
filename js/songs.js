@@ -5,8 +5,9 @@
 class SongManager {
     constructor() {
         this.arrangement = [0]; // Array of pattern indices
-        this.songs = this._loadSongs();
+        this.songs = [];
         this.currentSongName = 'Naamloos';
+        this._dbReady = this._loadFromDB();
     }
 
     // Song arrangement
@@ -56,20 +57,22 @@ class SongManager {
         });
     }
 
-    // Save/Load
-    _loadSongs() {
+    // Save/Load via IndexedDB
+    async _loadFromDB() {
         try {
-            return JSON.parse(localStorage.getItem('looplab-songs') || '[]');
-        } catch {
-            return [];
+            await loopLabDB.ready();
+            this.songs = await loopLabDB.getAllSongs();
+        } catch (err) {
+            console.warn('DB load failed, falling back to localStorage:', err);
+            try {
+                this.songs = JSON.parse(localStorage.getItem('looplab-songs') || '[]');
+            } catch {
+                this.songs = [];
+            }
         }
     }
 
-    _saveSongs() {
-        localStorage.setItem('looplab-songs', JSON.stringify(this.songs));
-    }
-
-    saveCurrent() {
+    async saveCurrent() {
         const name = prompt('Naam voor je song:', this.currentSongName) || this.currentSongName;
         this.currentSongName = name;
 
@@ -85,15 +88,26 @@ class SongManager {
             savedAt: new Date().toISOString()
         };
 
-        // Check if song with same name exists
-        const existingIdx = this.songs.findIndex(s => s.name === name);
-        if (existingIdx >= 0) {
-            this.songs[existingIdx] = songData;
-        } else {
-            this.songs.push(songData);
+        try {
+            const saved = await loopLabDB.saveSong(songData);
+            // Update local cache
+            const existingIdx = this.songs.findIndex(s => s.id === saved.id);
+            if (existingIdx >= 0) {
+                this.songs[existingIdx] = saved;
+            } else {
+                this.songs.push(saved);
+            }
+        } catch (err) {
+            console.warn('DB save failed, using localStorage fallback:', err);
+            const existingIdx = this.songs.findIndex(s => s.name === name);
+            if (existingIdx >= 0) {
+                this.songs[existingIdx] = songData;
+            } else {
+                this.songs.push(songData);
+            }
+            localStorage.setItem('looplab-songs', JSON.stringify(this.songs));
         }
 
-        this._saveSongs();
         this.renderSongsList();
     }
 
@@ -132,10 +146,18 @@ class SongManager {
         this.renderArrangement();
     }
 
-    deleteSong(index) {
-        if (confirm(`Weet je zeker dat je "${this.songs[index].name}" wilt verwijderen?`)) {
+    async deleteSong(index) {
+        const song = this.songs[index];
+        if (!song) return;
+        if (confirm(`Weet je zeker dat je "${song.name}" wilt verwijderen?`)) {
+            try {
+                if (song.id) {
+                    await loopLabDB.deleteSong(song.id);
+                }
+            } catch (err) {
+                console.warn('DB delete failed:', err);
+            }
             this.songs.splice(index, 1);
-            this._saveSongs();
             this.renderSongsList();
         }
     }
