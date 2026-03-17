@@ -434,11 +434,12 @@
             modal.classList.add('hidden');
             gamification._updateHUD();
 
-            // Show welcome tip from first ally
+            // Start tutorial for new players
             setTimeout(() => {
-                const tip = gamification.getRandomTip();
-                if (tip) gamification._showAllyMessage(tip.ally, tip.message);
-            }, 3000);
+                if (!tutorial.isTutorialCompleted()) {
+                    tutorial.start();
+                }
+            }, 1500);
         });
     }
 
@@ -617,9 +618,12 @@
     gamification._updateHUD();
     gamification._updateQuestUI();
 
-    // Show identity modal if first time
+    // Show identity modal if first time, or resume tutorial
     if (!gamification.hasIdentity()) {
         showIdentityModal();
+    } else if (!tutorial.isTutorialCompleted()) {
+        // Resume tutorial for returning players who haven't finished
+        setTimeout(() => tutorial.start(), 1000);
     }
 
     // Mark quest button if there are incomplete quests
