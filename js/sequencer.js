@@ -174,6 +174,14 @@ class BeatSequencer {
                     if (isActive) this._previewSound(inst.id);
                 });
 
+                // Multi-touch support for iPad
+                cell.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    const isActive = this.toggleCell(inst.id, i);
+                    cell.classList.toggle('active', isActive);
+                    if (isActive) this._previewSound(inst.id);
+                }, { passive: false });
+
                 cells.appendChild(cell);
             }
 

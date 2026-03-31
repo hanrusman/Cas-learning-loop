@@ -140,6 +140,17 @@ class PianoRoll {
                 key.classList.remove('playing');
             });
 
+            // Multi-touch: speel meerdere pianokeys tegelijk
+            key.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                this._previewNote(midi);
+                key.classList.add('playing');
+            }, { passive: false });
+            key.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                key.classList.remove('playing');
+            }, { passive: false });
+
             keysContainer.appendChild(key);
 
             // Grid row
@@ -183,6 +194,42 @@ class PianoRoll {
                         }
                     }
                 });
+
+                // Multi-touch: tik met meerdere vingers op het grid
+                cell.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    this.isMouseDown = true;
+                    this.isErasing = this.hasNote(midi, step);
+                    const isActive = this.toggleNote(midi, step);
+                    cell.classList.toggle('active', isActive);
+                    if (isActive) {
+                        cell.classList.toggle('in-scale', inScale);
+                        this._previewNote(midi);
+                    }
+                }, { passive: false });
+
+                cell.addEventListener('touchmove', (e) => {
+                    e.preventDefault();
+                    // Verwerk alle touchpunten (meerdere vingers)
+                    for (const touch of e.changedTouches) {
+                        const target = document.elementFromPoint(touch.clientX, touch.clientY);
+                        if (target && target.classList.contains('piano-grid-cell') && target !== this._lastTouchTarget) {
+                            this._lastTouchTarget = target;
+                            const m = parseInt(target.dataset.midi);
+                            const s = parseInt(target.dataset.step);
+                            const shouldActivate = !this.isErasing;
+                            this.setNote(m, s, shouldActivate);
+                            target.classList.toggle('active', shouldActivate);
+                            if (shouldActivate) this._previewNote(m);
+                        }
+                    }
+                }, { passive: false });
+
+                cell.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    this.isMouseDown = false;
+                    this._lastTouchTarget = null;
+                }, { passive: false });
 
                 row.appendChild(cell);
             }

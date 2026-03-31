@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head><title>Generate LoopLab Icons</title></head>
+<body>
+<h2>LoopLab Icon Generator</h2>
+<p>Rechtermuisklik op elk icoon → "Bewaar afbeelding als..." → sla op in de icons/ map</p>
+<canvas id="c192" width="192" height="192"></canvas>
+<canvas id="c512" width="512" height="512"></canvas>
+<script>
+function drawIcon(canvas) {
+  const s = canvas.width;
+  const ctx = canvas.getContext('2d');
+  const scale = s / 512;
+
+  // Background gradient
+  const bg = ctx.createLinearGradient(0, 0, s, s);
+  bg.addColorStop(0, '#1a1a3a');
+  bg.addColorStop(1, '#0a0a1a');
+
+  // Rounded rect
+  const r = 96 * scale;
+  ctx.beginPath();
+  ctx.moveTo(r, 0);
+  ctx.lineTo(s - r, 0);
+  ctx.quadraticCurveTo(s, 0, s, r);
+  ctx.lineTo(s, s - r);
+  ctx.quadraticCurveTo(s, s, s - r, s);
+  ctx.lineTo(r, s);
+  ctx.quadraticCurveTo(0, s, 0, s - r);
+  ctx.lineTo(0, r);
+  ctx.quadraticCurveTo(0, 0, r, 0);
+  ctx.closePath();
+  ctx.fillStyle = bg;
+  ctx.fill();
+
+  // Accent gradient
+  const accent = ctx.createLinearGradient(0, 0, s, s);
+  accent.addColorStop(0, '#7c4dff');
+  accent.addColorStop(1, '#00e5ff');
+
+  // Music notes
+  ctx.save();
+  ctx.translate(s * 0.5, s * 0.35);
+  ctx.scale(scale, scale);
+
+  // Note heads
+  ctx.fillStyle = accent;
+  ctx.save();
+  ctx.translate(-40, 60);
+  ctx.rotate(-20 * Math.PI / 180);
+  ctx.beginPath();
+  ctx.ellipse(0, 0, 32, 24, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+
+  ctx.save();
+  ctx.translate(50, 40);
+  ctx.rotate(-20 * Math.PI / 180);
+  ctx.beginPath();
+  ctx.ellipse(0, 0, 32, 24, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+
+  // Stems
+  ctx.fillStyle = accent;
+  ctx.fillRect(-12, -80, 6, 140);
+  ctx.fillRect(78, -100, 6, 140);
+
+  // Beams
+  ctx.save();
+  ctx.rotate(-8 * Math.PI / 180);
+  ctx.fillRect(-12, -100, 96, 8);
+  ctx.fillRect(-12, -82, 96, 8);
+  ctx.restore();
+
+  ctx.restore();
+
+  // Grid dots
+  const dots = [
+    [120, 360, true], [170, 360, true], [220, 360, false],
+    [270, 360, true], [320, 360, false], [370, 360, true],
+    [120, 400, false], [170, 400, true], [220, 400, false],
+    [270, 400, false], [320, 400, true], [370, 400, false]
+  ];
+  ctx.globalAlpha = 0.3;
+  dots.forEach(([x, y, filled]) => {
+    ctx.beginPath();
+    ctx.arc(x * scale, y * scale, 12 * scale, 0, Math.PI * 2);
+    if (filled) {
+      ctx.fillStyle = y === 360 ? '#7c4dff' : '#00e5ff';
+      ctx.fill();
+    } else {
+      ctx.strokeStyle = y === 360 ? '#7c4dff' : '#00e5ff';
+      ctx.lineWidth = 2 * scale;
+      ctx.stroke();
+    }
+  });
+  ctx.globalAlpha = 1;
+
+  // Text
+  ctx.fillStyle = 'rgba(255,255,255,0.9)';
+  ctx.font = `bold ${48 * scale}px Arial, Helvetica, sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.fillText('LoopLab', s * 0.5, 470 * scale);
+}
+
+drawIcon(document.getElementById('c192'));
+drawIcon(document.getElementById('c512'));
+
+// Auto-download
+['c192', 'c512'].forEach(id => {
+  const canvas = document.getElementById(id);
+  const link = document.createElement('a');
+  link.download = `icon-${canvas.width}.png`;
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+});
+</script>
+</body>
+</html>

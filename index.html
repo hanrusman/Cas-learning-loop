@@ -2,8 +2,17 @@
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>LoopLab - Maak je eigen beats!</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#7c4dff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="LoopLab">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/sequencer.css">
     <link rel="stylesheet" href="css/piano-roll.css">
@@ -368,5 +377,73 @@
     <script src="js/gamification.js"></script>
     <script src="js/tutorial.js"></script>
     <script src="js/app.js"></script>
+    <script>
+    // Register Service Worker for PWA
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('service-worker.js');
+    }
+
+    // Generate PWA icons via canvas (no build tools needed)
+    (function generateIcons() {
+        function drawIcon(size) {
+            const c = document.createElement('canvas');
+            c.width = c.height = size;
+            const ctx = c.getContext('2d');
+            const s = size / 512;
+
+            // Background
+            const bg = ctx.createLinearGradient(0, 0, size, size);
+            bg.addColorStop(0, '#1a1a3a');
+            bg.addColorStop(1, '#0a0a1a');
+            ctx.beginPath();
+            const r = 96 * s;
+            ctx.moveTo(r, 0); ctx.lineTo(size-r, 0);
+            ctx.quadraticCurveTo(size, 0, size, r);
+            ctx.lineTo(size, size-r);
+            ctx.quadraticCurveTo(size, size, size-r, size);
+            ctx.lineTo(r, size);
+            ctx.quadraticCurveTo(0, size, 0, size-r);
+            ctx.lineTo(0, r);
+            ctx.quadraticCurveTo(0, 0, r, 0);
+            ctx.fill();
+            ctx.fillStyle = bg; ctx.fill();
+
+            // Music note
+            const accent = ctx.createLinearGradient(0, 0, size, size);
+            accent.addColorStop(0, '#7c4dff');
+            accent.addColorStop(1, '#00e5ff');
+            ctx.fillStyle = accent;
+            ctx.save();
+            ctx.translate(size*0.5, size*0.35);
+            ctx.scale(s, s);
+            [[-40,60],[ 50,40]].forEach(([x,y]) => {
+                ctx.save(); ctx.translate(x,y); ctx.rotate(-0.35);
+                ctx.beginPath(); ctx.ellipse(0,0,32,24,0,0,Math.PI*2); ctx.fill();
+                ctx.restore();
+            });
+            ctx.fillRect(-12,-80,6,140);
+            ctx.fillRect(78,-100,6,140);
+            ctx.save(); ctx.rotate(-0.14);
+            ctx.fillRect(-12,-100,96,8);
+            ctx.fillRect(-12,-82,96,8);
+            ctx.restore(); ctx.restore();
+
+            // Text
+            ctx.fillStyle = 'rgba(255,255,255,0.9)';
+            ctx.font = `bold ${48*s}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.fillText('LoopLab', size*0.5, 470*s);
+            return c.toDataURL('image/png');
+        }
+
+        // Cache icons as data URLs for the manifest
+        [192, 512].forEach(size => {
+            const key = `looplab-icon-${size}`;
+            if (!localStorage.getItem(key)) {
+                localStorage.setItem(key, drawIcon(size));
+            }
+        });
+    })();
+    </script>
 </body>
 </html>
